@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>backend</artifactId>
+        <groupId>org.lukos</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>model</artifactId>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.3.2</version>
+            <configuration>
+                <tags>
+                    <tag>
+                        <name>utp.description</name>
+                        <placement>m</placement>
+                        <head>Unit test description:</head>
+                    </tag>
+                    <tag>
+                        <name>utp.test_items</name>
+                        <placement>m</placement>
+                        <head>Test items:</head>
+                    </tag>
+                    <tag>
+                        <name>utp.input_specs</name>
+                        <placement>m</placement>
+                        <head>Input specifications:</head>
+                    </tag>
+                    <tag>
+                        <name>utp.output_specs</name>
+                        <placement>m</placement>
+                        <head>Output specifications:</head>
+                    </tag>
+                    <tag>
+                        <name>utp.env_needs</name>
+                        <placement>m</placement>
+                        <head>Environmental needs:</head>
+                    </tag>
+                </tags>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+
+</project>

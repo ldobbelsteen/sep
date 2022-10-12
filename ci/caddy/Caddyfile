@@ -1,0 +1,9 @@
+{$DOMAIN:http://localhost} {
+	@backend path /api /api/* /oauth2 /oauth2/* /login /login/*
+	header /assets/* Cache-Control "public, immutable, max-age=31536000"
+	encode zstd gzip
+
+	root * /srv
+	reverse_proxy @backend backend:8080
+	file_server
+}

@@ -1,0 +1,24 @@
+package org.lukos.model.actionsystem;
+
+/**
+ * Enum containing all the possible action messages
+ *
+ * @author Valentijn van den Berg (1457446)
+ * @since 01-04-2022
+ */
+public enum ActionMessages {
+    CHANGED_ROLE_GLOBAL_MESSAGE,
+    CHANGED_ROLE_MESSAGE,
+    HEALED_PLAYER_MESSAGE,
+    LYNCH_KILL_BROADCAST_MESSAGE,
+    MAYOR_DECIDE_MESSAGE,
+    MOVE_TO_BRIDGE_MESSAGE,
+    MOVE_TO_HOUSE_MESSAGE,
+    NEW_MAYOR_MESSAGE,
+    NIGHT_KILL_BROADCAST_MESSAGE,
+    PROTECT_PLAYER_MESSAGE,
+    REVIVE_PLAYERS_MESSAGE,
+    SEE_CHARACTER_MESSAGE,
+    SEE_ROLE_MESSAGE,
+    YOU_HAVE_BEEN_REVIVED_MESSAGE;
+}

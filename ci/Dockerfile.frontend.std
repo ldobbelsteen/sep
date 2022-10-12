@@ -1,0 +1,10 @@
+FROM node:16-alpine AS builder
+WORKDIR /build
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend .
+RUN npm run build
+
+FROM caddy:2-alpine
+COPY ci/caddy/Caddyfile /etc/caddy/Caddyfile
+COPY --from=builder /build/dist /srv

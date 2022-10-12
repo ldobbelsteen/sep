@@ -1,0 +1,5 @@
+# This file is necessary to make sure that any leftover files from
+# separately executed build processes are not used in Docker containers.
+**/.git
+**/node_modules
+backend/**/target

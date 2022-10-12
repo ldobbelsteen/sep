@@ -1,0 +1,67 @@
+# Based on https://stackoverflow.com/q/62117249/2378368
+# Run containers as follows:
+#  docker-compose -f docker-compose.yml up -d
+#
+# Run for a merge request like:
+#  TAG=mr{number} docker-compose -f docker-compose.yml up -d
+#
+# where {number} is substituted for the MR ID.
+version: '3.8'
+services:
+  backend:
+    image: "registry.gitlab.com/2ipe0/lukos-container/backend:${TAG:-latest}"
+    restart: unless-stopped
+    build:
+      context: ..
+      dockerfile: ci/Dockerfile.backend.std
+    environment:
+      ENABLE_SPRINGDOC: "false"
+      MYSQL_HOSTNAME: mysql
+      MYSQL_PORT: 3306
+      MYSQL_ROOT_PASSWORD: unusedButNeedsToBeSpecifiedAnyway
+      MYSQL_USER: lukos
+      MYSQL_PASSWORD: example
+      MYSQL_DATABASE: lukos
+      # The following variables should be assigned to their actual values.
+      # To do so, create a .env file in the same directory as this file,
+      # and put lines like the following (without the #-symbol) in it:
+      #
+      # GOOGLE_CLIENT_ID=1092848839313-c5k10tlicqtflvckr17tbcuhhqqjcun4.apps.googleusercontent.com
+      # GOOGLE_CLIENT_SECRET=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
+      GOOGLE_CLIENT_ID:
+      GOOGLE_CLIENT_SECRET:
+    volumes:
+      - ../backend/model/src/main/resources:/opt/src/main/resources
+  mysql:
+    image: "mysql:8.0-oracle"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: unusedButNeedsToBeSpecifiedAnyway
+      MYSQL_USER: lukos
+      MYSQL_PASSWORD: example
+      MYSQL_DATABASE: lukos
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+  frontend:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+    image: "registry.gitlab.com/2ipe0/lukos-container/frontend:${TAG:-latest}"
+    restart: unless-stopped
+    build:
+      context: ..
+      dockerfile: ci/Dockerfile.frontend.std
+    environment:
+      # The following variable should be assigned to its actual value.
+      # To do so, create a .env file in the same directory as this file,
+      # and put a line like the following (without the #-symbol) in it:
+      #
+      # DOMAIN=example.com
+      DOMAIN:
+
+volumes:
+  caddy_data:
+  mysql_data:

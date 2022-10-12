@@ -1,0 +1,99 @@
+{
+  "scripts": {
+    "build": "vite build",
+    "check": "tsc --noEmit && eslint . --ignore-path .gitignore --max-warnings 0",
+    "test": "TZ=UTC jest",
+    "test:ci": "TZ=UTC jest --ci --coverage"
+  },
+  "dependencies": {
+    "@stomp/stompjs": "^6.1.2",
+    "@types/chance": "^1.1.3",
+    "@types/jest": "^27.4.1",
+    "@types/js-cookie": "^3.0.1",
+    "@types/react": "^18.0.5",
+    "@types/react-dom": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "@vitejs/plugin-react": "^1.3.1",
+    "chance": "^1.1.8",
+    "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.4.0",
+    "jest": "^27.5.1",
+    "jest-junit": "^13.1.0",
+    "js-cookie": "^3.0.1",
+    "prettier": "^2.6.2",
+    "prettier-plugin-jsdoc": "^0.3.38",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-hot-toast": "^2.2.0",
+    "react-select": "^5.3.0",
+    "sass": "^1.50.0",
+    "ts-jest": "^27.1.4",
+    "typescript": "^4.6.3",
+    "vite": "^2.9.4",
+    "vite-plugin-pwa": "^0.11.13",
+    "workbox-core": "^6.5.3",
+    "workbox-precaching": "^6.5.3",
+    "zod": "^3.14.4"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/recommended",
+      "plugin:import/typescript",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@typescript-eslint/recommended-requiring-type-checking",
+      "plugin:react/recommended",
+      "plugin:react-hooks/recommended",
+      "plugin:jsx-a11y/recommended",
+      "plugin:promise/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "tsconfigRootDir": "./",
+      "project": [
+        "./tsconfig.json"
+      ]
+    },
+    "rules": {
+      "line-comment-position": [
+        "warn",
+        {
+          "position": "beside"
+        }
+      ],
+      "import/order": [
+        "warn",
+        {
+          "alphabetize": {
+            "order": "asc"
+          }
+        }
+      ]
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    }
+  },
+  "prettier": {
+    "plugins": [
+      "prettier-plugin-jsdoc"
+    ]
+  }
+}

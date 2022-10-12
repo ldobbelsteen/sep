@@ -1,0 +1,59 @@
+{
+    "changedRoleGlobalMessage": {
+        "en": "A grave has been robbed!",
+        "nl": "Er is een graf beroofd!"
+    },
+    "changedRoleMessage": {
+        "en": "You stole the role from 🅳! Your main role is now 🆃.",
+        "nl": "Je hebt de rol van 🅳 gestolen! Je nieuwe rol is 🆃."
+    },
+    "healedPlayerMessage": {
+        "en": "You successfully healed 🅳!",
+        "nl": "Je hebt 🅳's leven gered!"
+    },
+    "lynchKillBroadcastMessage": {
+        "en": "🅳 has died.",
+        "nl": "🅳 is op de brandstapel overleden."
+    },
+    "mayorDecideMessage": {
+        "en": "The mayor has decided! 🅳 has died.",
+        "nl": "De burgemeester heeft besloten! 🅳 is op de brandstapel overleden."
+    },
+    "missingTranslation": {},
+    "moveToBridgeMessage": {
+        "en": "You travelled to 🅳.",
+        "nl": "Je bent naar 🅳 gegaan."
+    },
+    "moveToHouseMessage": {
+        "en": "You travelled to 🅳's house.",
+        "nl": "Je bent naar het huis van 🅳 gegaan."
+    },
+    "newMayorMessage": {
+        "en": "🅳 is the new mayor in town.",
+        "nl": "🅳 is de nieuwe burgemeester."
+    },
+    "nightKillBroadcastMessage": {
+        "en": "🅳 has died tonight.",
+        "nl": "🅳 is vannacht overleden."
+    },
+    "protectPlayerMessage": {
+        "en": "You protected 🅳 tonight.",
+        "nl": "Je hebt vannacht 🅳 beschermd."
+    },
+    "revivePlayersMessage": {
+        "en": "You revived 🅳!",
+        "nl": "Je hebt 🅳 weer tot leven gebracht!"
+    },
+    "seeCharacterMessage": {
+        "en": "The character type of 🅳 is 🆃.",
+        "nl": "Het karakter van 🅳 is 🆃."
+    },
+    "seeRoleMessage": {
+        "en": "The main role of 🅳 is 🆃.",
+        "nl": "🅳's rol is 🆃."
+    },
+    "youHaveBeenRevivedMessage": {
+        "en": "You have been revived!",
+        "nl": "Je bent weer tot leven gebracht!"
+    }
+}

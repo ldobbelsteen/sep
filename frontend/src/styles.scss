@@ -1,0 +1,289 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;700");
+
+$default-theme: #830e14;
+$default-text: #cccccc;
+
+:root {
+  --text-color: #{$default-text};
+  --text-color-transparent: #{rgba($default-text, 0.6)};
+  --theme-color: #{$default-theme};
+  --theme-color-dark: #{darken($default-theme, 16)};
+  --theme-color-dark-semi-transparent: #{darken(rgba($default-theme, 0.5), 16)};
+  --theme-color-dark-transparent: #{darken(rgba($default-theme, 0.8), 16)};
+  --theme-color-darkest: #{darken($default-theme, 19)};
+}
+
+$primary-font-size: 20px;
+$secondary-font-size: 0.8rem;
+$default-border-radius: 0.4rem;
+$default-padding: 0.6rem;
+$default-margin: 0.6rem;
+$max-width: 18rem;
+
+html,
+body,
+main {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(var(--theme-color), var(--theme-color-dark));
+  background-attachment: fixed;
+  font-family: "Sora", sans-serif;
+  font-size: $primary-font-size;
+  color: var(--text-color);
+  user-select: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.select-container {
+  * {
+    color: var(--text-color);
+    font-family: inherit;
+    font-weight: bold;
+  }
+
+  margin: $default-margin;
+
+  .select__control {
+    background-color: var(--theme-color-darkest);
+    border-radius: $default-border-radius;
+    padding: 0.3 * $default-padding;
+    border: none;
+
+    .select__single-value {
+      color: inherit;
+    }
+  }
+
+  .select__menu {
+    background-color: var(--theme-color-darkest);
+
+    .select__menu-list {
+      .select__option {
+        background-color: var(--theme-color-darkest);
+
+        &:hover {
+          background-color: var(--theme-color);
+        }
+      }
+    }
+  }
+}
+
+button {
+  background-color: var(--theme-color-darkest);
+  border-radius: $default-border-radius;
+  font-size: $secondary-font-size;
+  font-family: inherit;
+  font-weight: bold;
+  color: inherit;
+  border: none;
+  padding: $default-padding;
+  margin: $default-margin;
+  cursor: pointer;
+
+  &:disabled {
+    color: var(--text-color-transparent);
+    cursor: auto;
+  }
+}
+
+input,
+textarea {
+  background-color: var(--theme-color-dark-transparent);
+  border-radius: $default-border-radius;
+  font-size: $secondary-font-size;
+  font-family: inherit;
+  color: inherit;
+  border: none;
+  padding: $default-padding;
+  margin: $default-margin;
+}
+
+textarea {
+  resize: none;
+  height: 6em;
+}
+
+section {
+  background-color: var(--theme-color-dark-semi-transparent);
+  border-radius: $default-border-radius;
+  padding: $default-padding;
+  margin: $default-margin;
+  break-inside: avoid;
+
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+  }
+
+  .subsection {
+    width: 100%;
+    font-size: $secondary-font-size;
+    background-color: var(--theme-color-dark-transparent);
+    border-radius: $default-border-radius;
+    break-inside: avoid;
+
+    & > div {
+      margin: $default-margin;
+    }
+  }
+}
+
+.allow-select {
+  user-select: text;
+}
+
+.full-size {
+  width: 100%;
+  min-height: 100%;
+}
+
+.column-center-children {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.row-center-children {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.masonry {
+  column-count: 3;
+  column-width: $max-width;
+  column-gap: $default-margin;
+  margin: $default-margin;
+
+  section {
+    margin: 0;
+    margin-bottom: $default-margin;
+  }
+}
+
+.gap {
+  gap: $default-margin;
+}
+
+.large-square-button {
+  width: 12rem;
+  height: 12rem;
+  font-size: $secondary-font-size;
+  background-color: var(--theme-color-dark);
+
+  &:hover {
+    background-color: var(--theme-color-darkest);
+  }
+
+  img {
+    width: 4rem;
+    height: 4rem;
+    padding: 2rem;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-color-transparent);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-color);
+}
+
+.scrollbox {
+  .reverse-order {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  div {
+    max-height: 12rem;
+    overflow-y: scroll;
+
+    .float-outward {
+      display: flex;
+      justify-content: space-between;
+
+      .right {
+        color: var(--text-color-transparent);
+        padding-right: 0.5 * $default-padding;
+        padding-left: 0.5 * $default-padding;
+      }
+
+      .left {
+        text-align: left;
+        overflow-wrap: break-all;
+        hyphens: auto;
+      }
+    }
+  }
+}
+
+.modal {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.6);
+
+  .content {
+    max-height: 90%;
+    max-width: 1.5 * $max-width;
+    background-color: var(--theme-color);
+    border-radius: 2 * $default-border-radius;
+    padding: 2 * $default-padding;
+    margin: $default-margin;
+    gap: $default-padding;
+    overflow-y: scroll;
+  }
+}
+
+.tiny-size {
+  width: 0.8rem;
+  height: 0.8rem;
+  padding-right: 0.3rem;
+  padding-left: 0.3rem;
+}
+
+.tiny-margin {
+  margin: 0.1rem;
+  padding: 0.1rem;
+}
+
+.greyed-out {
+  text-align: center;
+  font-style: italic;
+  color: var(--text-color-transparent);
+}
+
+.hyphen-breaks {
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.max-width {
+  max-width: $max-width;
+}
+
+.padding-and-margin {
+  padding: $default-padding;
+  margin: $default-margin;
+}

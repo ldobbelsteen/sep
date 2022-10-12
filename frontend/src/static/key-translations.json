@@ -1,0 +1,511 @@
+{
+    "actions": {
+        "en": "actions",
+        "nl": "acties"
+    },
+    "alive": {
+        "en": "alive",
+        "nl": "levend"
+    },
+    "alphaWolf": {
+        "en": "alpha wolf",
+        "nl": "alfa wolf"
+    },
+    "alphaWolfExplanation": {
+        "en": "one of the werewolves will be unanimously elected to be the alpha wolf by the werewolves. The alpha wolf decides who will be eliminated by the werewolves during every night. If the alpha wolf dies, they can choose their successor.",
+        "nl": "een van de weerwolven wordt unaniem verkozen om alfa wolf te zijn. De alfa wolf bepaalt wie er door de weerwolven vermoord wordt welke nacht. Als de alfa wolf overlijdt, kiest deze een opvolger."
+    },
+    "alphaWolfKill": {
+        "en": "alpha wolf kill",
+        "nl": "alfa wolf moord"
+    },
+    "alreadyVoted": {
+        "en": "you have already voted",
+        "nl": "je hebt al gestemd"
+    },
+    "archer": {
+        "en": "archer",
+        "nl": "boogschutter"
+    },
+    "archerExplanation": {
+        "en": "the archer may try to shoot someone at night every time the game speed is increased.",
+        "nl": "de boogschutter mag iedere keer wanneer de spelsnelheid verhoogd wordt, 's nachts iemand proberen neer te schieten."
+    },
+    "back": {
+        "en": "back",
+        "nl": "terug"
+    },
+    "bridge": {
+        "en": "bridge",
+        "nl": "brug"
+    },
+    "burn": {
+        "en": "burn house",
+        "nl": "huis in de fik steken"
+    },
+    "chat": {
+        "en": "chat",
+        "nl": "chat"
+    },
+    "chatClosed": {
+        "en": "chat is closed",
+        "nl": "chat is gesloten"
+    },
+    "clairvoyant": {
+        "en": "clairvoyant",
+        "nl": "ziener"
+    },
+    "clairvoyantExplanation": {
+        "en": "the clairvoyant can choose to investigate one person each night and discover their role.",
+        "nl": "de ziener kan elke nacht een persoon onderzoeken om hun rol te achterhalen."
+    },
+    "clairvoyantSeeRole": {
+        "en": "see player role",
+        "nl": "spelerrol inzien"
+    },
+    "clean": {
+        "en": "clean player",
+        "nl": "speler schoonmaken"
+    },
+    "code": {
+        "en": "code",
+        "nl": "code"
+    },
+    "create": {
+        "en": "create",
+        "nl": "aanmaken"
+    },
+    "createGame": {
+        "en": "create game",
+        "nl": "spel aanmaken"
+    },
+    "day": {
+        "en": "day",
+        "nl": "dag"
+    },
+    "deathnote": {
+        "en": "deathnote",
+        "nl": "afscheidsbrief"
+    },
+    "deceased": {
+        "en": "deceased",
+        "nl": "overleden"
+    },
+    "deleteAccount": {
+        "en": "delete account",
+        "nl": "account verwijderen"
+    },
+    "downloadInfo": {
+        "en": "download information",
+        "nl": "informatie downloaden"
+    },
+    "emptyInput": {
+        "en": "input is empty",
+        "nl": "invoer is leeg"
+    },
+    "evening": {
+        "en": "evening",
+        "nl": "avond"
+    },
+    "execution": {
+        "en": "execution",
+        "nl": "executie"
+    },
+    "expand": {
+        "en": "expand",
+        "nl": "uitbreiden"
+    },
+    "gameName": {
+        "en": "game name",
+        "nl": "spelnaam"
+    },
+    "gdpr": {
+        "en": "GDPR",
+        "nl": "GDPR"
+    },
+    "general": {
+        "en": "general",
+        "nl": "algemeen"
+    },
+    "graverobber": {
+        "en": "graverobber",
+        "nl": "grafrover"
+    },
+    "graverobberExplanation": {
+        "en": "the graverobber may steal one of the roles of a deceased person at any moment.",
+        "nl": "de grafrover mag op ieder gewenst moment één van de rollen stelen van een overleden persoon."
+    },
+    "group": {
+        "en": "group",
+        "nl": "groep"
+    },
+    "guardianAngel": {
+        "en": "guardian angel",
+        "nl": "beschermengel"
+    },
+    "guardianAngelExplanation": {
+        "en": "the guardian angel may choose to protect someone from death during the night every evening. The protection action is bound to the person, not the location.",
+        "nl": "de beschermengel mag iedere avond één iemand uitkiezen die zij voor die nacht beschermen tegen de dood. De beschermactie is persoonsgebonden, niet plaatsgebonden."
+    },
+    "haveWon": {
+        "en": "have won!",
+        "nl": "hebben gewonnen!"
+    },
+    "heal": {
+        "en": "heal player",
+        "nl": "speler genezen"
+    },
+    "healer": {
+        "en": "healer",
+        "nl": "genezer"
+    },
+    "healerExplanation": {
+        "en": "the healer may save a person's life before they come to die. They can only do this once.",
+        "nl": "de genezer mag één keer iemands leven redden als ze gaan overlijden in de ochtend."
+    },
+    "house": {
+        "en": "house",
+        "nl": "huis"
+    },
+    "info": {
+        "en": "info",
+        "nl": "info"
+    },
+    "inRepair": {
+        "en": "in repair",
+        "nl": "in reparatie"
+    },
+    "intact": {
+        "en": "intact",
+        "nl": "intact"
+    },
+    "invalidConfig": {
+        "en": "configuration is invalid",
+        "nl": "configuratie is ongeldig"
+    },
+    "join": {
+        "en": "join",
+        "nl": "meedoen"
+    },
+    "joinGame": {
+        "en": "join game",
+        "nl": "meedoen met een spel"
+    },
+    "kill": {
+        "en": "kill player",
+        "nl": "speler vermoorden"
+    },
+    "leaveGame": {
+        "en": "leave game",
+        "nl": "spel verlaten"
+    },
+    "leftNoMessage": {
+        "en": "no message was left",
+        "nl": "er is geen bericht achtergelaten"
+    },
+    "lobby": {
+        "en": "lobby",
+        "nl": "lobby"
+    },
+    "logo": {
+        "en": "logo",
+        "nl": "logo"
+    },
+    "logOut": {
+        "en": "log out",
+        "nl": "uitloggen"
+    },
+    "lukos": {
+        "en": "lukos",
+        "nl": "lukos"
+    },
+    "lynch": {
+        "en": "lynch",
+        "nl": "brandstapel"
+    },
+    "manual": {
+        "en": "manual",
+        "nl": "handleiding"
+    },
+    "maxPlayers": {
+        "en": "max. no. players",
+        "nl": "max. aantal spelers"
+    },
+    "mayor": {
+        "en": "mayor",
+        "nl": "burgemeester"
+    },
+    "mayorDecide": {
+        "en": "break lynch tie",
+        "nl": "brandstapel doorslaggevende stem"
+    },
+    "mayorExplanation": {
+        "en": "on the first in-game day, the mayor is chosen by the players. The mayor will have the final say if there is a tie during a vote. The mayor will always have the character type 'not shady', regardless of their other roles, double roles and jobs. If the mayor dies, they will choose their successor.",
+        "nl": "de eerste dag wordt er een burgemeester gekozen door de spelers. De burgemeester geeft de doorslaggevende stem bij een gelijk aantal stemmen. De burgemeester heeft altijd het karakter 'not shady', ongeacht andere rollen, dubbelrollen of banen. Als de burgemeester overlijdt, kiest deze een opvolger."
+    },
+    "medium": {
+        "en": "medium",
+        "nl": "medium"
+    },
+    "mediumExplanation": {
+        "en": "the medium has access to the deceased chat. Here they can communicate with deceased people and forward information to the living.",
+        "nl": "de medium heeft toegang tot de doden chat. Hierin mogen zij met de doden communiceren en informatie doorspelen naar de levenden."
+    },
+    "messages": {
+        "en": "messages",
+        "nl": "berichten"
+    },
+    "misc": {
+        "en": "miscellaneous",
+        "nl": "overig"
+    },
+    "missingTranslation": {},
+    "morning": {
+        "en": "morning",
+        "nl": "ochtend"
+    },
+    "name": {
+        "en": "name",
+        "nl": "naam"
+    },
+    "next": {
+        "en": "next",
+        "nl": "volgende"
+    },
+    "night": {
+        "en": "night",
+        "nl": "nacht"
+    },
+    "noMessages": {
+        "en": "no messages yet",
+        "nl": "nog geen berichten"
+    },
+    "nonwinning": {
+        "en": "non-winning",
+        "nl": "niet winnend"
+    },
+    "notShady": {
+        "en": "not shady",
+        "nl": "niet shady"
+    },
+    "obituary": {
+        "en": "obituary",
+        "nl": "afscheidsbrief"
+    },
+    "of": {
+        "en": "of",
+        "nl": "van"
+    },
+    "phase": {
+        "en": "phase",
+        "nl": "fase"
+    },
+    "placeholder": {
+        "en": "-",
+        "nl": "-"
+    },
+    "player": {
+        "en": "player",
+        "nl": "speler"
+    },
+    "playerList": {
+        "en": "player list",
+        "nl": "spelerslijst"
+    },
+    "players": {
+        "en": "players",
+        "nl": "spelers"
+    },
+    "poison": {
+        "en": "poison player",
+        "nl": "speler vergiftigen"
+    },
+    "poisoner": {
+        "en": "poisoner",
+        "nl": "gifmenger"
+    },
+    "poisonerExplanation": {
+        "en": "the poisoner can choose to poison breakfast at a location (including bridges) during the evening. They can only do this once and it will only kill one person.",
+        "nl": "de gifmenger besluit in de avond op welke plaats ze het ontbijt willen vergiftigen, inclusief bruggen. Ze kunnen dit maar één keer doen en het zal maar één iemand doden."
+    },
+    "privateInvestigate": {
+        "en": "investigate player",
+        "nl": "onderzoek speler"
+    },
+    "privateInvestigator": {
+        "en": "private investigator",
+        "nl": "private investigator"
+    },
+    "privateInvestigatorExplanation": {
+        "en": "during the night, the Private Investigator (PI) can investigate people and find out whether they are 'shady' or 'not shady'. How often per night the PI can perform this action depends on the number of players. For 2-19 players, once per night. For 20-29 players, two per night, For 30-39 players, three per night and so on.",
+        "nl": "'s Nachts kan de Private Investigator (PI) mensen onderzoeken om te kijken of ze 'shady' of 'not shady' zijn. Hoe vaak de PI dit per nacht kan doen hangt af van de hoeveelheid spelers. Voor 2-19 spelers, een keer per nacht. Voor 20-29 spelers, twee keer per nacht. Voor 30-39 spelers, drie keer per nacht, enz."
+    },
+    "profile": {
+        "en": "profile",
+        "nl": "profiel"
+    },
+    "protect": {
+        "en": "protect player",
+        "nl": "speler beschermen"
+    },
+    "pyre": {
+        "en": "pyre",
+        "nl": "brandstapel"
+    },
+    "revive": {
+        "en": "revive player",
+        "nl": "speler tot leven brengen"
+    },
+    "robGrave": {
+        "en": "rob player grave",
+        "nl": "speler grafroven"
+    },
+    "role": {
+        "en": "role",
+        "nl": "rol"
+    },
+    "roleOverview": {
+        "en": "role overview",
+        "nl": "roloverzicht"
+    },
+    "roles": {
+        "en": "roles",
+        "nl": "rollen"
+    },
+    "seed": {
+        "en": "seed",
+        "nl": "seed"
+    },
+    "select": {
+        "en": "select",
+        "nl": "selecteren"
+    },
+    "send": {
+        "en": "send",
+        "nl": "stuur"
+    },
+    "shady": {
+        "en": "shady",
+        "nl": "shady"
+    },
+    "shoot": {
+        "en": "shoot player",
+        "nl": "speler beschieten"
+    },
+    "signInWithGoogle": {
+        "en": "sign in with Google",
+        "nl": "aanmelden met Google"
+    },
+    "soak": {
+        "en": "soak house",
+        "nl": "huis doordrenken"
+    },
+    "soakHouses": {
+        "en": "Soak houses",
+        "nl": "Huizen doordrenken"
+    },
+    "startGame": {
+        "en": "start game",
+        "nl": "spel starten"
+    },
+    "status": {
+        "en": "status",
+        "nl": "status"
+    },
+    "stopGame": {
+        "en": "stop game",
+        "nl": "spel stoppen"
+    },
+    "successfullySubmitted": {
+        "en": "successfully submitted",
+        "nl": "succesvol verzonden"
+    },
+    "successorAlphaWolf": {
+        "en": "alpha wolf successor",
+        "nl": "alfa wolf opvolger"
+    },
+    "successorMayor": {
+        "en": "mayor successor",
+        "nl": "burgemeester opvolger"
+    },
+    "the": {
+        "en": "the",
+        "nl": "de"
+    },
+    "throwGame": {
+        "en": "stop game",
+        "nl": "spel stoppen"
+    },
+    "timeLeft": {
+        "en": "time left",
+        "nl": "tijd resterend"
+    },
+    "townspeople": {
+        "en": "townspeople",
+        "nl": "burgers"
+    },
+    "townsperson": {
+        "en": "townsperson",
+        "nl": "burger"
+    },
+    "townspersonExplanation": {
+        "en": "the townsperson is innocent. They can only talk to other townspeople.",
+        "nl": "de burger is onschuldig. Hij kan alleen communiceren met andere burgers."
+    },
+    "typeMessage": {
+        "en": "type a message",
+        "nl": "typ een bericht"
+    },
+    "unknown": {
+        "en": "unknown",
+        "nl": "onbekend"
+    },
+    "username": {
+        "en": "username",
+        "nl": "gebruikersnaam"
+    },
+    "vaag": {
+        "en": "vague",
+        "nl": "vaag"
+    },
+    "vote": {
+        "en": "vote",
+        "nl": "stemming"
+    },
+    "voting": {
+        "en": "voting",
+        "nl": "stemmen"
+    },
+    "welcome": {
+        "en": "welcome",
+        "nl": "welkom"
+    },
+    "werewolf": {
+        "en": "werewolf",
+        "nl": "weerwolf"
+    },
+    "werewolfCleaner": {
+        "en": "werewolf cleaner",
+        "nl": "weerwolf cleaner"
+    },
+    "werewolfExplanation": {
+        "en": "the werewolf is in the werewolf chat. Their goal is to kill the entire town together with their fellow wolves.",
+        "nl": "de weerwolf zit in de weerwolf chat. Het doel is om met de andere wolven het hele dorp uit te moorden."
+    },
+    "werewolves": {
+        "en": "werewolves",
+        "nl": "weerwolven"
+    },
+    "wolves": {
+        "en": "wolves",
+        "nl": "wolven"
+    },
+    "you": {
+        "en": "you",
+        "nl": "jij"
+    },
+    "yours": {
+        "en": "yours",
+        "nl": "van jou"
+    }
+}

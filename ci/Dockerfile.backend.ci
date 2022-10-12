@@ -1,0 +1,4 @@
+FROM openjdk:17-slim
+WORKDIR /opt
+COPY backend/controller/target/controller-*.jar /opt/
+ENTRYPOINT java -jar /opt/controller-*.jar

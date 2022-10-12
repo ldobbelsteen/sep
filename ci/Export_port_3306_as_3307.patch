@@ -1,0 +1,15 @@
+diff --git a/ci/docker-compose.yml b/ci/docker-compose.yml
+--- a/ci/docker-compose.yml
++++ b/ci/docker-compose.yml
+@@ -31,6 +31,11 @@
+       MYSQL_USER: lukos
+       MYSQL_PASSWORD: example
+       MYSQL_DATABASE: lukos
++    ports:
++      - target: 3306
++        published: 3307
++        protocol: tcp
++        mode: host
+     volumes:
+       - mysql_data:/var/lib/mysql
+       - ./sql:/docker-entrypoint-initdb.d

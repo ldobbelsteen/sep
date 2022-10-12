@@ -1,0 +1,9 @@
+FROM maven:3-openjdk-17-slim AS builder
+WORKDIR /build
+COPY backend .
+RUN mvn --no-transfer-progress clean package -Dmaven.test.skip
+
+FROM openjdk:17-slim
+WORKDIR /opt
+COPY --from=builder /build/controller/target/controller-*.jar /opt/
+ENTRYPOINT java -jar /opt/controller-*.jar

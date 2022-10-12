@@ -1,0 +1,546 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  ONLY_MODEL: "false" # This defines whether the test Javadoc is generated for all packages or just the model package.
+  DOCKER_PLATFORMS: linux/amd64,linux/arm64
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # Run on MRs
+    - if: "$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS" # Don't run if already running for an MR
+      when: never
+    - if: "$CI_COMMIT_BRANCH" # Run on branches
+    - if: "$CI_COMMIT_TAG" # Run on tags
+
+build_frontend:
+  stage: build
+  image: node:16-alpine
+  needs: []
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    expire_in: 7 days
+    paths:
+      - frontend/dist
+
+build_backend:
+  stage: build
+  image: maven:3-openjdk-17-slim
+  needs:
+    - job: build_frontend
+  script:
+    - cd backend
+    - mv ../frontend/dist controller/src/main/resources/static
+    - mvn --no-transfer-progress clean package -Dmaven.test.skip
+  artifacts:
+    expire_in: 7 days
+    paths:
+      - "backend/**/target/*.jar"
+
+test_frontend:
+  stage: test
+  image: node:16-alpine
+  needs: []
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  script:
+    - cd frontend
+    - npm install
+    - npm run check
+    - npm run test:ci
+  artifacts:
+    expire_in: 30 days
+    when: always
+    paths:
+      - frontend/coverage
+    reports:
+      junit:
+        - frontend/junit.xml
+      cobertura: frontend/coverage/cobertura-coverage.xml
+
+test_backend:
+  stage: test
+  image: maven:3-openjdk-17-slim
+  needs: []
+  services:
+    - mysql:8.0-oracle
+  variables:
+    MYSQL_HOSTNAME: mysql
+    MYSQL_PORT: 3306
+    MYSQL_ROOT_PASSWORD: mysql
+    MYSQL_USER: lukos
+    MYSQL_PASSWORD: example
+    MYSQL_DATABASE: lukos
+  before_script:
+    - apt-get -qq update
+    - apt-get -qq install -y default-mysql-client
+    - mysql --host=${MYSQL_HOSTNAME} --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --database=${MYSQL_DATABASE} < ci/sql/mysql_init.sql
+    # Make CSV file for role division available in test cases
+    - ln -s $CI_PROJECT_DIR/backend/model/src/main/resources/Role_assignment_config.csv $CI_PROJECT_DIR/backend/controller/src/main/resources/Role_assignment_config.csv
+  script:
+    - cd backend
+    - mvn $MAVEN_CLI_OPTS --no-transfer-progress clean
+      org.jacoco:jacoco-maven-plugin:prepare-agent
+      test
+      org.jacoco:jacoco-maven-plugin:report-aggregate
+  after_script:
+    - cat $CI_PROJECT_DIR/backend/report/target/site/jacoco-aggregate/index.html | grep -o '<tfoot>.*</tfoot>'
+  coverage: "/Total.*?([0-9]{1,3})%/"
+  artifacts:
+    expire_in: 30 days
+    when: always
+    paths:
+      - backend/report/target/site/jacoco-aggregate
+    reports:
+      junit:
+        - backend/**/target/*-reports/TEST-*.xml
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
+# Code quality template overrides
+code_quality:
+  stage: test
+  tags:
+    - cq-sans-dind
+  services: # Shut off Docker-in-Docker (https://docs.gitlab.com/ee/user/project/merge_requests/code_quality.html#set-up-a-private-runner-for-code-quality-without-docker-in-docker)
+  allow_failure: true
+  rules:
+    - if: "$CODE_QUALITY_DISABLED" # Don't run if specifically disabled
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # Run in MR pipelines
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH" # Run in default branch pipelines
+    - if: "$CI_COMMIT_TAG" # Run in tag pipelines
+  artifacts:
+    expire_in: 30 days
+    expose_as: "Code Quality Report"
+    paths: [gl-code-quality-report.json]
+
+code_quality_html:
+  extends: code_quality
+  variables:
+    REPORT_FORMAT: html
+  artifacts:
+    expire_in: 30 days
+    paths: [gl-code-quality-report.html]
+
+simian_backend:
+  stage: test
+  image: openjdk:17-jdk
+  needs: []
+  allow_failure: false
+  before_script:
+    # Start download section
+    - echo -e "\e[0Ksection_start:`date +%s`:simian_download\r\e[0KDownloading Simian"
+    - mkdir simian-download
+    - cd simian-download
+    - curl -O https://www.harukizaemon.com/simian/simian-2.5.10.tar.gz
+    - tar zfx simian-*.tar.gz
+    - mv bin/simian-*.jar ../simian.jar
+    - cd ..
+    - rm -rf simian-download
+    - echo -e "\e[0Ksection_end:`date +%s`:simian_download\r\e[0K"
+    # End download section
+    # Make sure job fails if Simian returns that there is duplication
+    # Based on https://stackoverflow.com/a/6872163/2378368
+    - set -o pipefail
+    # Start remove test files
+    - echo -e "\e[0Ksection_start:`date +%s`:remove_tests\r\e[0KRemove test code"
+    - rm -rf $CI_PROJECT_DIR/backend/controller/src/test/
+    - rm -rf $CI_PROJECT_DIR/backend/model/src/test/
+    - echo -e "\e[0Ksection_end:`date +%s`:remove_tests\r\e[0K"
+  script:
+    # Begin run section
+    - echo -e "\e[0Ksection_start:`date +%s`:simian_run\r\e[0KRunning Simian"
+    - java -jar simian.jar -balanceParentheses+ -failOnDuplication+ -ignoreCharacterCase+ -ignoreCurlyBraces+ -ignoreIdentifierCase+ -ignoreModifiers+ -ignoreStringCase+ -language=java -threshold=6 "**/*.java" | tee simian_report.txt
+    - echo -e "\e[0Ksection_end:`date +%s`:simian_run\r\e[0K"
+    # End run section
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - simian_report.txt
+
+simian_frontend:
+  stage: test
+  image: openjdk:17-jdk
+  needs: []
+  allow_failure: true
+  before_script:
+    # Start download section
+    - echo -e "\e[0Ksection_start:`date +%s`:simian_download\r\e[0KDownloading Simian"
+    - mkdir simian-download
+    - cd simian-download
+    - curl -O https://www.harukizaemon.com/simian/simian-2.5.10.tar.gz
+    - tar zfx simian-*.tar.gz
+    - mv bin/simian-*.jar ../simian.jar
+    - cd ..
+    - rm -rf simian-download
+    - echo -e "\e[0Ksection_end:`date +%s`:simian_download\r\e[0K"
+    # End download section
+    # Make sure job fails if Simian returns that there is duplication
+    # Based on https://stackoverflow.com/a/6872163/2378368
+    - set -o pipefail
+    # Start remove test files
+    - echo -e "\e[0Ksection_start:`date +%s`:remove_tests\r\e[0KRemove test code"
+    - rm -rf $CI_PROJECT_DIR/backend/controller/src/test/
+    - rm -rf $CI_PROJECT_DIR/backend/model/src/test/
+    - echo -e "\e[0Ksection_end:`date +%s`:remove_tests\r\e[0K"
+  script:
+    - EXIT=0
+    # Begin run section
+    - echo -e "\e[0Ksection_start:`date +%s`:simian_run\r\e[0KRunning Simian"
+    - java -jar simian.jar -balanceParentheses+ -failOnDuplication+ -ignoreCharacterCase+ -ignoreCurlyBraces+ -ignoreIdentifierCase+ -ignoreModifiers+ -ignoreStringCase+ -language=javascript -threshold=6 "**/*.ts" "**/*.tsx" | tee simian_report.txt || EXIT=1
+    - echo -e "\e[0Ksection_end:`date +%s`:simian_run\r\e[0K"
+    # End run section
+    - exit $EXIT
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - simian_report.txt
+
+understand_backend:
+  stage: test
+  tags:
+    - understand
+  needs: []
+  script:
+    - und create -languages Java /opt/understand-data/$CI_JOB_ID.und
+    - und add $CI_PROJECT_DIR /opt/understand-data/$CI_JOB_ID.und
+    - und remove $CI_PROJECT_DIR/backend/controller/src/test/ /opt/understand-data/$CI_JOB_ID.und
+    - und remove $CI_PROJECT_DIR/backend/model/src/test/ /opt/understand-data/$CI_JOB_ID.und
+    - und settings -metrics CountLineCode AvgCyclomatic MaxCyclomatic RatioCommentToCode CountDeclMethod CountClassCoupled /opt/understand-data/$CI_JOB_ID.und
+    - und settings -reportOutputDirectory $CI_PROJECT_DIR/reportHtml /opt/understand-data/$CI_JOB_ID.und
+    - und settings -metricsOutputFile $CI_PROJECT_DIR/metrics.csv /opt/understand-data/$CI_JOB_ID.und
+    - und analyze /opt/understand-data/$CI_JOB_ID.und
+    - und report /opt/understand-data/$CI_JOB_ID.und
+    - und metrics /opt/understand-data/$CI_JOB_ID.und
+    - und export -dependencies file matrix $CI_PROJECT_DIR/file_deps_matrix.csv /opt/understand-data/$CI_JOB_ID.und
+    - rm -rf /opt/understand-data/$CI_JOB_ID.und
+    - rm /opt/understand-data/$CI_JOB_ID.txt
+  artifacts:
+    expire_in: 30 days
+    expose_as: "Understand back-end report"
+    paths:
+      - metrics.csv
+      - file_deps_matrix.csv
+      - reportHtml
+
+understand_frontend:
+  stage: test
+  tags:
+    - understand
+  needs: []
+  script:
+    - und create -languages web /opt/understand-data/$CI_JOB_ID.und
+    - und add $CI_PROJECT_DIR/frontend/src /opt/understand-data/$CI_JOB_ID.und
+    - shopt -s globstar
+    - und remove ${CI_PROJECT_DIR}/frontend/src/**/*.test.ts /opt/understand-data/$CI_JOB_ID.und
+    - shopt -u globstar
+    - und settings -metrics CountLineCode AvgCyclomatic MaxCyclomatic RatioCommentToCode CountDeclFunction /opt/understand-data/$CI_JOB_ID.und
+    - und settings -reportOutputDirectory $CI_PROJECT_DIR/reportHtml /opt/understand-data/$CI_JOB_ID.und
+    - und settings -metricsOutputFile $CI_PROJECT_DIR/metrics.csv /opt/understand-data/$CI_JOB_ID.und
+    - und analyze /opt/understand-data/$CI_JOB_ID.und
+    - und report /opt/understand-data/$CI_JOB_ID.und
+    - und metrics /opt/understand-data/$CI_JOB_ID.und
+    - und export -dependencies file csv $CI_PROJECT_DIR/file_deps_csv.csv /opt/understand-data/$CI_JOB_ID.und
+    - und export -dependencies file matrix $CI_PROJECT_DIR/file_deps_matrix.csv /opt/understand-data/$CI_JOB_ID.und
+    - rm -rf /opt/understand-data/$CI_JOB_ID.und
+    - rm /opt/understand-data/$CI_JOB_ID.txt
+  artifacts:
+    expire_in: 30 days
+    expose_as: "Understand front-end report"
+    paths:
+      - metrics.csv
+      - file_deps_csv.csv
+      - file_deps_matrix.csv
+      - reportHtml
+
+understand_check_backend:
+  variables:
+    DISABLE_UNDERSTAND_VERIFICATION: "false"
+    CORRECT: "true"
+  stage: test
+  image: registry.gitlab.com/smeetsee/it/docker-python-data-processing
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $DISABLE_UNDERSTAND_VERIFICATION == $CORRECT'
+      allow_failure: true
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $DISABLE_UNDERSTAND_VERIFICATION != $CORRECT'
+      allow_failure: false
+    - if: "$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS"
+      when: never
+    - if: "$CI_COMMIT_BRANCH && $DISABLE_UNDERSTAND_VERIFICATION == $CORRECT"
+      allow_failure: true
+    - if: "$CI_COMMIT_BRANCH && $DISABLE_UNDERSTAND_VERIFICATION != $CORRECT"
+      allow_failure: false
+    - if: "$CI_COMMIT_TAG && $DISABLE_UNDERSTAND_VERIFICATION == $CORRECT"
+      allow_failure: true
+    - if: "$CI_COMMIT_TAG && $DISABLE_UNDERSTAND_VERIFICATION != $CORRECT"
+      allow_failure: false
+  needs:
+    - job: understand_backend
+  script:
+    - EXIT=0
+    - python -u ci/understand_verify.py metrics.csv true || EXIT=1
+    # Fix some strange formatting issues
+    - python -u ci/understand_cyclic.py file_deps_matrix.csv true metrics.csv || EXIT=1
+    - exit $EXIT
+
+understand_check_frontend:
+  variables:
+    DISABLE_UNDERSTAND_VERIFICATION: "false"
+    CORRECT: "true"
+  stage: test
+  image: registry.gitlab.com/smeetsee/it/docker-python-data-processing
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $DISABLE_UNDERSTAND_VERIFICATION == $CORRECT'
+      allow_failure: true
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $DISABLE_UNDERSTAND_VERIFICATION != $CORRECT'
+      allow_failure: false
+    - if: "$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS"
+      when: never
+    - if: "$CI_COMMIT_BRANCH && $DISABLE_UNDERSTAND_VERIFICATION == $CORRECT"
+      allow_failure: true
+    - if: "$CI_COMMIT_BRANCH && $DISABLE_UNDERSTAND_VERIFICATION != $CORRECT"
+      allow_failure: false
+    - if: "$CI_COMMIT_TAG && $DISABLE_UNDERSTAND_VERIFICATION == $CORRECT"
+      allow_failure: true
+    - if: "$CI_COMMIT_TAG && $DISABLE_UNDERSTAND_VERIFICATION != $CORRECT"
+      allow_failure: false
+  needs:
+    - job: understand_frontend
+  script:
+    - EXIT=0
+    - python -u ci/understand_verify.py metrics.csv false || EXIT=1
+    - python -u ci/understand_fan_out.py file_deps_csv.csv metrics.csv || EXIT=1
+    # Fix some strange formatting issues
+    - python -u ci/understand_cyclic.py file_deps_matrix.csv true metrics.csv || EXIT=1
+    - exit $EXIT
+
+coverage:
+  stage: test
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
+  tags:
+    - amd64
+  needs:
+    - job: test_backend
+  script:
+    # convert report from jacoco to cobertura, using relative project path
+    # find all modules containing java source files.
+    - jacoco_paths=`find * -path "**/src/main/java" -type d | sed -e 's@^@'"$CI_PROJECT_DIR"'/@'`
+    - python /opt/cover2cover.py backend/report/target/site/jacoco-aggregate/jacoco.xml $jacoco_paths > backend/report/target/site/coverage.xml
+  artifacts:
+    expire_in: 30 days
+    reports:
+      cobertura: backend/report/target/site/coverage.xml
+
+javadoc:
+  stage: deploy
+  image: maven:3-openjdk-17-slim
+  needs:
+    - job: build_backend
+      artifacts: false
+  script:
+    - cd backend
+    # goal 'install' is necessary to prevent issue mentioned at https://maven.apache.org/plugins/maven-javadoc-plugin/examples/aggregate-dependency-sources.html
+    # "NOTE: If your configuration includes a dependency but that dependency's source artifact is unavailable, the javadoc plugin will fail."
+    - mvn --no-transfer-progress clean install javadoc:javadoc javadoc:aggregate -Dmaven.test.skip
+  artifacts:
+    expire_in: 30 days
+    expose_as: "Javadoc"
+    paths:
+      - "backend/target/site/apidocs"
+
+javadoc_test:
+  stage: deploy
+  image: maven:3-openjdk-17-slim
+  needs:
+    - job: build_backend
+      artifacts: false
+  script:
+    - if [ $ONLY_MODEL = "true" ]; then
+    # goal 'install' is necessary to prevent issue mentioned at https://maven.apache.org/plugins/maven-javadoc-plugin/examples/aggregate-dependency-sources.html
+    # "NOTE: If your configuration includes a dependency but that dependency's source artifact is unavailable, the javadoc plugin will fail."
+    - cd backend/model
+    - mvn --no-transfer-progress clean install javadoc:test-javadoc -Dmaven.test.skip
+    - else
+    - cd backend
+    - mvn --no-transfer-progress clean install javadoc:test-javadoc -Dmaven.test.skip
+    - fi
+  artifacts:
+    expire_in: 30 days
+    expose_as: "Javadoc"
+    paths:
+      - "backend/target/site/testapidocs"
+      - "backend/model/target/site/testapidocs"
+      - "backend/controller/target/site/testapidocs"
+
+# The job given below does not work in its current version. However, its results are not used at this point either.
+utp_latex:
+  stage: deploy
+  image: python:3.10
+  allow_failure: true
+  variables:
+    ONLY_MODEL: "true"
+  needs:
+    - job: javadoc_test
+  script:
+    - mkdir $CI_PROJECT_DIR/target
+    - if [ $ONLY_MODEL = "true" ]; then
+    - cd backend/model/target/site/testapidocs
+    - else
+    - cd backend/target/site/testapidocs
+    - fi
+    # Prevent errors from immediately crashing CI job
+    - set +e
+    - shopt -s globstar
+    # Extract information from Javadoc to tex-files
+    - i=0
+    - ERROR=0
+    - for FILE in **/*.html; do
+    - HAS_ERROR=0
+    - i=$(( i + 1 ))
+    - python -u $CI_PROJECT_DIR/ci/unit_tests_to_latex.py $FILE $CI_PROJECT_DIR/target/$i.tex || HAS_ERROR=1
+    - ERROR=$(( ERROR + HAS_ERROR ))
+    - done
+    # Make errors crash CI job once again
+    - set -e
+    - shopt -u globstar
+    # Merge the obtained files into one file
+    - cd $CI_PROJECT_DIR/target
+    - touch $CI_PROJECT_DIR/unit_tests.tex
+    - for FILE in *.tex; do
+    - cat $FILE >> $CI_PROJECT_DIR/unit_tests.tex
+    - done
+    # Throw the actual error
+    # - if [ $ERROR -gt 0 ]; then
+    # - exit 1
+    # - fi
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - unit_tests.tex
+
+utp_simple:
+  stage: deploy
+  image: python:3.10
+  allow_failure: true
+  needs:
+    - job: javadoc_test
+  before_script:
+    - shopt -s globstar
+    - rm -rf **/class-use
+    - rm **/package-tree.html
+    - rm **/package-use.html
+    - rm **/package-summary.html
+    - rm **/allclasses-index.html
+    - rm **/allpackages-index.html
+    - rm **/constant-values.html
+    - rm **/help-doc.html
+    - rm **/index.html
+    - rm **/index-all.html
+    - rm **/overview-summary.html
+    - rm **/overview-tree.html
+    - shopt -u globstar
+  script:
+    - mkdir $CI_PROJECT_DIR/target
+    - cd $CI_PROJECT_DIR/backend/model/target/site/testapidocs
+    # Prevent errors from immediately crashing CI job
+    - set +e
+    - shopt -s globstar
+    # Extract information from Javadoc to tex-files
+    - i=0
+    - ERROR=0
+    - for FILE in **/*.html; do
+    - HAS_ERROR=0
+    - i=$(( i + 1 ))
+    - python -u $CI_PROJECT_DIR/ci/UTP_simple.py $FILE $CI_PROJECT_DIR/target/$i.tex || HAS_ERROR=1
+    - ERROR=$(( ERROR + HAS_ERROR ))
+    - done
+    - if [ $ONLY_MODEL = "false" ]; then
+    - cd $CI_PROJECT_DIR/backend/controller/target/site/testapidocs
+    - for FILE in **/*.html; do
+    - HAS_ERROR=0
+    - i=$(( i + 1 ))
+    - python -u $CI_PROJECT_DIR/ci/UTP_simple.py $FILE $CI_PROJECT_DIR/target/$i.tex || HAS_ERROR=1
+    - ERROR=$(( ERROR + HAS_ERROR ))
+    - done
+    - fi
+    # Make errors crash CI job once again
+    - set -e
+    - shopt -u globstar
+    # Merge the obtained files into one file
+    - cd $CI_PROJECT_DIR/target
+    - touch $CI_PROJECT_DIR/unit_tests.tex
+    # - cat $CI_PROJECT_DIR/ci/UTP_simple_begin.tex >> $CI_PROJECT_DIR/unit_tests.tex
+    - for j in `seq 1 $i`; do
+    -   if [ -f "${j}.tex" ]; then
+    -     cat ${j}.tex >> $CI_PROJECT_DIR/unit_tests.tex
+    -   fi
+    - done
+    # - cat $CI_PROJECT_DIR/ci/UTP_simple_end.tex >> $CI_PROJECT_DIR/unit_tests.tex
+    # Throw the actual error
+    - if [ $ERROR -gt 0 ]; then
+    - exit 1
+    - fi
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - unit_tests.tex
+
+docker:
+  stage: deploy
+  tags:
+    - cq-sans-dind
+  image: crazymax/docker
+  needs:
+    - job: build_backend
+    - job: build_frontend
+  before_script:
+    - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - rm .dockerignore # ignore is only intended for non-CI purposes
+  script:
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+        TAG="latest"
+      else
+        TAG="$CI_COMMIT_REF_SLUG"
+      fi
+    - docker context inspect lukos-builder-context || docker context create lukos-builder-context
+    - docker buildx inspect lukos-builder-instance || docker buildx create --name lukos-builder-instance --use lukos-builder-context
+    - docker buildx use lukos-builder-instance
+    - docker buildx build --file ci/Dockerfile.backend.ci --push --platform $DOCKER_PLATFORMS --tag $CI_REGISTRY_IMAGE/backend:$TAG .
+    - docker buildx build --file ci/Dockerfile.frontend.ci --push --platform $DOCKER_PLATFORMS --tag $CI_REGISTRY_IMAGE/frontend:$TAG .
+
+.docker_compose:
+  stage: deploy
+  needs: []
+  tags:
+    - docker-compose
+  when: manual
+  allow_failure: true
+  script:
+    - git config user.name "GitLab Runner"
+    - git config user.email "gitlab-runner@smeets.re"
+    - git apply ci/Export_port_3306_as_3307.patch
+    - cd ci
+    - cp /opt/lukos.env ./.env
+    - docker-compose down
+    - (docker volume rm ci_mysql_data || true)
+    - docker-compose build
+    - docker-compose up -d
+
+.docker_show_logs:
+  stage: deploy
+  needs: []
+  tags:
+    - docker-compose
+  when: manual
+  allow_failure: true
+  script:
+    - docker logs ci_backend_1
